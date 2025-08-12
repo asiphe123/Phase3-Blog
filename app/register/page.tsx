@@ -55,9 +55,9 @@ export default function RegisterPage() {
     if (!res.ok) {
       setError(data.error || "Registration failed.");
     } else {
-      router.push("/");
+      router.push("/login");
     }
-  };
+  }
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">

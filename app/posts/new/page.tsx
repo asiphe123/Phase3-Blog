@@ -48,8 +48,9 @@ export default function NewPostPage() {
         return;
       }
 
+    
       // Redirect to posts 
-      router.push('/posts');
+      router.push('/');
     } catch (err) {
       setError('Failed to create post');
     } finally {
