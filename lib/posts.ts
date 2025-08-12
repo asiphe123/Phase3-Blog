@@ -24,8 +24,7 @@ export async function getAllPosts(): Promise<Post[]> {
     filenames.map(async (filename) => {
       const filePath = path.join(postsDir, filename);
       const fileContents = fs.readFileSync(filePath, "utf8");
-      const matterResult = matter(fileContents);
-
+      
       const { data, content } = matter(fileContents);
 
       return {

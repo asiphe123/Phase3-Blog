@@ -21,7 +21,7 @@ export default async function SinglePostPage({ params }: { params: Promise < { i
         dangerouslySetInnerHTML={{ __html: post.contentHtml }}
       />
 
-      {/* CommentsSection is a client component */}
+      
       <CommentsSection postId={post.id} />
     </div>
   );

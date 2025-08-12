@@ -79,7 +79,7 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
     <div className="mt-8">
       <h3 className="text-xl font-semibold mb-4">Comments</h3>
 
-      {/* List comments */}
+      
       <div className="space-y-4 mb-6">
         {comments.length === 0 ? (
           <p className="text-gray-600">No comments yet. Be the first to comment!</p>
@@ -93,7 +93,7 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
         )}
       </div>
 
-      {/* Add comment form */}
+    
       <form onSubmit={handleSubmit}>
         <textarea
           value={newComment}

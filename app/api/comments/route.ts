@@ -10,7 +10,7 @@ interface Comment {
 }
 
 // Declare comments as an array of Comment objects
-let comments: Comment[] = [];
+const comments: Comment[] = [];
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
