@@ -5,13 +5,13 @@ import { getAllPosts } from "@/lib/posts";
 
 const postsDirectory = path.join(process.cwd(), "posts");
 
-// GET: Return list of all posts metadata
+// Return list of all posts metadata
 export async function GET() {
   const posts = getAllPosts();
   return NextResponse.json(posts);
 }
 
-// POST: Create new post file from JSON data
+// Create new post file from JSON data
 export async function POST(req: NextRequest) {
   try {
     const { title, content, author, date } = await req.json();

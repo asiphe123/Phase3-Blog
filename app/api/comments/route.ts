@@ -9,7 +9,7 @@ interface Comment {
   timestamp: string;
 }
 
-// Declare comments as an array of Comment objects
+
 const comments: Comment[] = [];
 
 export async function GET(req: NextRequest) {
@@ -17,12 +17,12 @@ export async function GET(req: NextRequest) {
   const postId = searchParams.get('postId');
 
   if (postId) {
-    // Filter comments for the given postId
+  
     const filteredComments = comments.filter(comment => comment.postId === postId);
     return NextResponse.json(filteredComments);
   }
 
-  // Return all comments if no postId query param
+ 
   return NextResponse.json(comments);
 }
 

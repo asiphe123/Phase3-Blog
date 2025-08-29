@@ -19,16 +19,21 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Fetch comments for this post
+  const API_BASE = '/api/proxyComments'; 
+
+ 
   useEffect(() => {
     async function fetchComments() {
       try {
-        const res = await fetch(`/api/comments?postId=${postId}`);
-        const data = await res.json();
+        const res = await fetch(`${API_BASE}?postId=${postId}`);
+        if (!res.ok) throw new Error('Failed to fetch comments');
+        const data: Comment[] = await res.json();
         setComments(data);
-      } catch (error) {
-        console.error('Failed to fetch comments:', error);
+      } catch (err) {
+        console.error('Fetch comments error:', err);
+        setError('Failed to load comments');
       }
     }
     fetchComments();
@@ -37,49 +42,67 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
   // Submit new comment
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim() || !session?.user?.name) return;
+    setError('');
+
+    const trimmedComment = newComment.trim();
+    const username = session?.user?.name;
+
+   
+    if (!trimmedComment) {
+      setError('Comment cannot be empty');
+      return;
+    }
+    if (!username) {
+      setError('You must be logged in to post a comment');
+      return;
+    }
+    if (!postId) {
+      setError('Post ID is missing');
+      return;
+    }
 
     setLoading(true);
+
     try {
-      const res = await fetch('/api/comments', {
+      console.log('Submitting comment:', { postId, text: trimmedComment, user: username });
+
+      const res = await fetch(API_BASE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           postId,
-          text: newComment.trim(),
-          user: session.user.name,
+          text: trimmedComment,
+          user: username,
         }),
       });
 
-      if (res.ok) {
-        setNewComment('');
-        // Refresh comments
-        const updatedComments = await res.json();
-        setComments((prev) => [...prev, updatedComments.comment]);
-      } else {
-        console.error('Failed to post comment');
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || 'Failed to post comment');
       }
-    } catch (error) {
-      console.error('Error posting comment:', error);
+
+      const data = await res.json();
+      console.log('Comment submitted:', data);
+
+      setComments(prev => [...prev, data.comment]);
+      setNewComment('');
+    } catch (err: unknown) {
+      console.error('Error submitting comment:', err);
+      if (err instanceof Error) {
+        setError(err.message || 'Error submitting comment');
+      } else {
+        setError('Error submitting comment');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  if (!session) {
-    return (
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold mb-4">Comments</h3>
-        <p className="text-gray-600">Please log in to view and add comments.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="mt-8">
       <h3 className="text-xl font-semibold mb-4">Comments</h3>
+      {error && <p className="text-red-500 mb-2">{error}</p>}
 
-      
       <div className="space-y-4 mb-6">
         {comments.length === 0 ? (
           <p className="text-gray-600">No comments yet. Be the first to comment!</p>
@@ -93,7 +116,6 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
         )}
       </div>
 
-    
       <form onSubmit={handleSubmit}>
         <textarea
           value={newComment}
